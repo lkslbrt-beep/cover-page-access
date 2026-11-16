@@ -3,9 +3,9 @@
   var mount = document.querySelector('[data-cxd3="drummer-a"]');
   if (!mount || mount.__on) return; mount.__on = 1;
   var st = document.createElement('style');
-  st.textContent = 'html,body:has(#cdk-drum){overflow-x:clip}@media (min-width:768px){#cdk-drum .cpa-cta-ratingwrap{display:flex;justify-content:flex-start;margin-left:0}}#cdk-drum .cxd3-snd{position:relative!important;right:auto!important;bottom:auto!important;margin:22px 0 0;display:inline-flex!important;padding:12px 20px;font-size:11px;border-color:rgba(255,255,255,.6);backdrop-filter:blur(6px);background:rgba(18,10,6,.25);transition:background .3s,border-color .3s}#cdk-drum .cxd3-snd[aria-pressed=true]{background:#e25b1e;border-color:#e25b1e}#cdk-drum .cxd3-snd[aria-pressed=true] i{background:#fff}#cdk-drum .cdk-title{will-change:transform}#cdk-drum a.cpa-home-cta_btn{display:inline-flex!important;align-items:center;min-height:48px;line-height:1.2!important;box-sizing:border-box;overflow:visible;height:auto!important;border:1px solid #fff!important;border-bottom:1px solid #fff!important;transform:none!important}#cdk-drum .cxd3-snd{min-height:48px;font-size:12px!important;letter-spacing:2.5px!important;border:1.5px solid #e25b1e!important;gap:10px!important}#cdk-drum .cxd3-snd svg{width:18px;height:18px}#cdk-drum{cursor:pointer}#cdk-drum a,#cdk-drum button{cursor:pointer}#cdk-drum .cxd3-tap{position:absolute;left:0;top:0;width:90px;height:90px;margin:-45px 0 0 -45px;border-radius:50%;border:2px solid #f0874e;pointer-events:none;animation:cxTap .5s ease-out forwards}@keyframes cxTap{from{transform:scale(.3);opacity:1}to{transform:scale(1.6);opacity:0}}';
+  st.textContent = 'html,body:has(#cdk-drum){overflow-x:clip}#cdk-drum{cursor:crosshair;touch-action:manipulation}#cdk-drum .cxd3-rip{position:absolute;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;border:2px solid #f0874e;pointer-events:none;animation:cxdRip .7s ease-out forwards;z-index:3}@keyframes cxdRip{to{transform:scale(9);opacity:0}}@media (min-width:768px){#cdk-drum .cpa-cta-ratingwrap{display:flex;justify-content:flex-start;margin-left:0}}#cdk-drum .cxd3-snd{position:relative!important;right:auto!important;bottom:auto!important;margin:22px 0 0;display:inline-flex!important;padding:12px 20px;font-size:11px;border-color:rgba(255,255,255,.6);backdrop-filter:blur(6px);background:rgba(18,10,6,.25);transition:background .3s,border-color .3s}#cdk-drum .cxd3-snd[aria-pressed=true]{background:#e25b1e;border-color:#e25b1e}#cdk-drum .cxd3-snd[aria-pressed=true] i{background:#fff}#cdk-drum .cdk-title{will-change:transform}#cdk-drum a.cpa-home-cta_btn{display:inline-flex!important;align-items:center;min-height:48px;line-height:1.2!important;box-sizing:border-box;overflow:visible;height:auto!important;border:1px solid #fff!important;border-bottom:1px solid #fff!important;transform:none!important}#cdk-drum .cxd3-snd{min-height:48px;font-size:12px!important;letter-spacing:2.5px!important;border:1.5px solid #e25b1e!important;gap:10px!important}#cdk-drum .cxd3-snd svg{width:18px;height:18px}#cdk-drum{cursor:pointer}#cdk-drum a,#cdk-drum button{cursor:pointer}#cdk-drum .cxd3-tap{position:absolute;left:0;top:0;width:90px;height:90px;margin:-45px 0 0 -45px;border-radius:50%;border:2px solid #f0874e;pointer-events:none;animation:cxTap .5s ease-out forwards}@keyframes cxTap{from{transform:scale(.3);opacity:1}to{transform:scale(1.6);opacity:0}}';
   document.head.appendChild(st);
-  (function(){var h=mount.closest('.cdk'),b=h&&h.querySelector('.cxd3-snd'),i=h&&h.querySelector('.cdk-in');if(b&&i){var w=document.createElement('div');w.appendChild(b);i.appendChild(w);b.querySelector('i').outerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12"/></svg>';b.querySelector('b').textContent='Play the beat live';}})();
+
   var BASE = new URL('.', (document.currentScript && document.currentScript.src) || 'https://lkslbrt-beep.github.io/cover-page-access/cta-lab/drummer/a/index.js').href;
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduce) return; // poster stays
@@ -118,8 +118,23 @@
       pulse = 1; flash = .9; kick = 1;
       var d = document.createElement('span'); d.className = 'cxd3-tap'; d.style.left = (e.clientX - r.left) + 'px'; d.style.top = (e.clientY - r.top) + 'px'; host.appendChild(d); setTimeout(function () { d.remove(); }, 520);
     });
+    function initAudio() { if (!ac) { ac = new (window.AudioContext || window.webkitAudioContext)(); var cp = ac.createDynamicsCompressor(); cp.threshold.value = -14; cp.ratio.value = 4; var mg = ac.createGain(); mg.gain.value = .9; bus = ac.createGain(); bus.connect(cp).connect(mg).connect(ac.destination); } if (ac.state === 'suspended') ac.resume(); }
+    function setSnd(v) { snd = v; if (btn) { btn.setAttribute('aria-pressed', v); btn.querySelector('b').textContent = v ? 'Sound on \u00b7 the beat is live' : 'Sound off'; } if (v) initAudio(); }
+    // touch the stage to play the drums
+    var ripples = [];
+    host.addEventListener('pointerdown', function (e) {
+      if (e.target.closest('a,button')) return;
+      if (!snd) setSnd(true); else initAudio();
+      var r = host.getBoundingClientRect(), x = (e.clientX - r.left) / r.width;
+      var t = ac.currentTime + .005;
+      if (x < .34) { tone(t, 165, 42, .42, 1.1); noise(t, .02, 'highpass', 3000, .5); }
+      else if (x < .67) { tone(t, 230, 160, .16, .55, 'triangle'); noise(t, .22, 'bandpass', 2200, .9); }
+      else { noise(t, 1.1, 'highpass', 5000, .45); tone(t, 520, 480, .3, .08, 'square'); }
+      pulse = 1; flash = 1; kick = 1;
+      var d = document.createElement('span'); d.className = 'cxd3-rip'; d.style.left = (e.clientX - r.left) + 'px'; d.style.top = (e.clientY - r.top) + 'px'; host.appendChild(d); setTimeout(function () { d.remove(); }, 700);
+    });
     if (btn) btn.addEventListener('click', function () {
-      snd = !snd; btn.setAttribute('aria-pressed', snd); btn.querySelector('b').textContent = snd ? 'Beat live, tap to drum' : 'Play the beat live';
+      setSnd(!snd); return; btn.setAttribute('aria-pressed', snd); btn.querySelector('b').textContent = snd ? 'Beat live, tap to drum' : 'Play the beat live';
       if (snd) initAudio();
     });
 
