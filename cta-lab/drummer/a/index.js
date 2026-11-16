@@ -3,9 +3,9 @@
   var mount = document.querySelector('[data-cxd3="drummer-a"]');
   if (!mount || mount.__on) return; mount.__on = 1;
   var st = document.createElement('style');
-  st.textContent = 'html,body:has(#cdk-drum){overflow-x:clip}@media (min-width:768px){#cdk-drum .cpa-cta-ratingwrap{display:flex;justify-content:flex-start;margin-left:0}}#cdk-drum .cxd3-snd{position:relative!important;right:auto!important;bottom:auto!important;margin:22px 0 0;display:inline-flex!important;padding:12px 20px;font-size:11px;border-color:rgba(255,255,255,.6);backdrop-filter:blur(6px);background:rgba(18,10,6,.25);transition:background .3s,border-color .3s}#cdk-drum .cxd3-snd[aria-pressed=true]{background:#e25b1e;border-color:#e25b1e}#cdk-drum .cxd3-snd[aria-pressed=true] i{background:#fff}#cdk-drum .cdk-in{will-change:transform}';
+  st.textContent = 'html,body:has(#cdk-drum){overflow-x:clip}@media (min-width:768px){#cdk-drum .cpa-cta-ratingwrap{display:flex;justify-content:flex-start;margin-left:0}}#cdk-drum .cxd3-snd{position:relative!important;right:auto!important;bottom:auto!important;margin:22px 0 0;display:inline-flex!important;padding:12px 20px;font-size:11px;border-color:rgba(255,255,255,.6);backdrop-filter:blur(6px);background:rgba(18,10,6,.25);transition:background .3s,border-color .3s}#cdk-drum .cxd3-snd[aria-pressed=true]{background:#e25b1e;border-color:#e25b1e}#cdk-drum .cxd3-snd[aria-pressed=true] i{background:#fff}#cdk-drum .cdk-title{will-change:transform}#cdk-drum a.cpa-home-cta_btn{display:inline-flex!important;align-items:center;min-height:48px;line-height:1.2!important;box-sizing:border-box;overflow:visible;height:auto!important;border:1px solid #fff!important;border-bottom:1px solid #fff!important;transform:none!important}#cdk-drum .cxd3-snd{min-height:48px;font-size:12px!important;letter-spacing:2.5px!important;border:1.5px solid #e25b1e!important;gap:10px!important}#cdk-drum .cxd3-snd svg{width:18px;height:18px}#cdk-drum{cursor:pointer}#cdk-drum a,#cdk-drum button{cursor:pointer}#cdk-drum .cxd3-tap{position:absolute;left:0;top:0;width:90px;height:90px;margin:-45px 0 0 -45px;border-radius:50%;border:2px solid #f0874e;pointer-events:none;animation:cxTap .5s ease-out forwards}@keyframes cxTap{from{transform:scale(.3);opacity:1}to{transform:scale(1.6);opacity:0}}';
   document.head.appendChild(st);
-  (function(){var h=mount.closest('.cdk'),b=h&&h.querySelector('.cxd3-snd'),i=h&&h.querySelector('.cdk-in');if(b&&i){var w=document.createElement('div');w.appendChild(b);i.appendChild(w);b.querySelector('b').textContent='Play the beat';}})();
+  (function(){var h=mount.closest('.cdk'),b=h&&h.querySelector('.cxd3-snd'),i=h&&h.querySelector('.cdk-in');if(b&&i){var w=document.createElement('div');w.appendChild(b);i.appendChild(w);b.querySelector('i').outerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12"/></svg>';b.querySelector('b').textContent='Play the beat live';}})();
   var BASE = new URL('.', (document.currentScript && document.currentScript.src) || 'https://lkslbrt-beep.github.io/cover-page-access/cta-lab/drummer/a/index.js').href;
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduce) return; // poster stays
@@ -71,7 +71,7 @@
     ['ts','td','tc'].forEach(function (n, i) { gl.uniform1i(gl.getUniformLocation(pr, n), i); });
     var U = {}; ['m','res','sc','pl','ph','t','zm','rt','fl','dk'].forEach(function (n) { U[n] = gl.getUniformLocation(pr, n); });
     var flash = 0, kick = 0, mx = 0, my = 0, tx = 0, ty = 0, scr = 0, pulse = 0, lastT = 0, hi = 0, vis = true, ready = 0;
-    var host = mount.closest('.cdk') || mount; var inn = host.querySelector('.cdk-in');
+    var host = mount.closest('.cdk') || mount; var inn = host.querySelector('.cdk-title');
     host.addEventListener('pointermove', function (e) { var r = host.getBoundingClientRect(); tx = (e.clientX - r.left) / r.width - .5; ty = (e.clientY - r.top) / r.height - .5; });
     host.addEventListener('pointerleave', function () { tx = ty = 0; });
     var dpr = Math.min(window.devicePixelRatio || 1, phone ? 1 : 1.5);
@@ -81,7 +81,7 @@
     vids.forEach(function (v) { v.addEventListener('canplay', function () { if (++ready === 3) cv.classList.add('on'); }, { once: true }); v.play().catch(function () {}); });
 
     // sound on tap, off by default
-    var ac = null, snd = false, btn = host.querySelector('.cxd3-snd'); if (btn) btn.querySelector('b').textContent = 'Play the beat';
+    var ac = null, snd = false, btn = host.querySelector('.cxd3-snd'); if (btn) btn.querySelector('b').textContent = 'Play the beat live';
     var bus = null;
     function noise(t, len, type, freq, gain) {
       var n = ac.createBufferSource(), bb = ac.createBuffer(1, ac.sampleRate * len, ac.sampleRate), d = bb.getChannelData(0);
@@ -104,10 +104,23 @@
       if (i % 4 === 3) { noise(t, .9, 'highpass', 5500, .35); }
     }
     function hat(){ if (!snd || !ac) return; noise(ac.currentTime, .04, 'highpass', 8000, .18); }
+    function initAudio() { if (!ac) { ac = new (window.AudioContext || window.webkitAudioContext)(); var cp = ac.createDynamicsCompressor(); cp.threshold.value = -14; cp.ratio.value = 4; var mg = ac.createGain(); mg.gain.value = .9; bus = ac.createGain(); bus.connect(cp).connect(mg).connect(ac.destination); } if (ac.state === 'suspended') ac.resume(); }
+    host.addEventListener('pointerdown', function (e) {
+      if (e.target.closest('a,button')) return;
+      if (!snd) { snd = true; if (btn) { btn.setAttribute('aria-pressed', true); btn.querySelector('b').textContent = 'Beat live, tap to drum'; } }
+      initAudio();
+      var r = host.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      var t = ac.currentTime + .005;
+      if (y > .7) { tone(t, 165, 42, .42, 1.2); noise(t, .02, 'highpass', 3000, .5); }
+      else if (x > .78) { noise(t, 1.1, 'highpass', 5000, .5); noise(t, .08, 'bandpass', 3500, .4); }
+      else if (x > .55) { tone(t, 140 + y * 80, 90, .35, .8, 'sine'); noise(t, .05, 'bandpass', 1500, .3); }
+      else { tone(t, 230, 160, .16, .6, 'triangle'); noise(t, .22, 'bandpass', 2200, 1); }
+      pulse = 1; flash = .9; kick = 1;
+      var d = document.createElement('span'); d.className = 'cxd3-tap'; d.style.left = (e.clientX - r.left) + 'px'; d.style.top = (e.clientY - r.top) + 'px'; host.appendChild(d); setTimeout(function () { d.remove(); }, 520);
+    });
     if (btn) btn.addEventListener('click', function () {
-      snd = !snd; btn.setAttribute('aria-pressed', snd); btn.querySelector('b').textContent = snd ? 'Sound on, feel it' : 'Play the beat';
-      if (snd && !ac) { ac = new (window.AudioContext || window.webkitAudioContext)(); var cp = ac.createDynamicsCompressor(); cp.threshold.value = -14; cp.ratio.value = 4; var mg = ac.createGain(); mg.gain.value = .9; bus = ac.createGain(); bus.connect(cp).connect(mg).connect(ac.destination); }
-      if (ac && ac.state === 'suspended') ac.resume();
+      snd = !snd; btn.setAttribute('aria-pressed', snd); btn.querySelector('b').textContent = snd ? 'Beat live, tap to drum' : 'Play the beat live';
+      if (snd) initAudio();
     });
 
     var last = 0, step = phone ? 1000 / 30 : 0;
