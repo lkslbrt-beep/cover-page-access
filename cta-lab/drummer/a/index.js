@@ -2,6 +2,9 @@
 (function () {
   var mount = document.querySelector('[data-cxd3="drummer-a"]');
   if (!mount || mount.__on) return; mount.__on = 1;
+  var st = document.createElement('style');
+  st.textContent = 'html,body:has(#cdk-drum){overflow-x:clip}@media (min-width:768px){#cdk-drum .cpa-cta-ratingwrap{display:flex;justify-content:flex-start;margin-left:0}}';
+  document.head.appendChild(st);
   var BASE = new URL('.', (document.currentScript && document.currentScript.src) || 'https://lkslbrt-beep.github.io/cover-page-access/cta-lab/drummer/a/index.js').href;
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduce) return; // poster stays
@@ -71,7 +74,7 @@
     host.addEventListener('pointerleave', function () { tx = ty = 0; });
     var dpr = Math.min(window.devicePixelRatio || 1, phone ? 1 : 1.5);
     function size() { var r = mount.getBoundingClientRect(); cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr); gl.viewport(0, 0, cv.width, cv.height); }
-    size(); addEventListener('resize', size);
+    size(); addEventListener('resize', size); if (window.ResizeObserver) new ResizeObserver(size).observe(mount);
     new IntersectionObserver(function (e) { vis = e[0].isIntersecting; vids.forEach(function (v) { vis ? v.play().catch(function(){}) : v.pause(); }); }).observe(host);
     vids.forEach(function (v) { v.addEventListener('canplay', function () { if (++ready === 3) cv.classList.add('on'); }, { once: true }); v.play().catch(function () {}); });
 
