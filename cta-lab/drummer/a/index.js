@@ -3,8 +3,9 @@
   var mount = document.querySelector('[data-cxd3="drummer-a"]');
   if (!mount || mount.__on) return; mount.__on = 1;
   var st = document.createElement('style');
-  st.textContent = 'html,body:has(#cdk-drum){overflow-x:clip}@media (min-width:768px){#cdk-drum .cpa-cta-ratingwrap{display:flex;justify-content:flex-start;margin-left:0}}#cdk-drum .cxd3-snd{padding:12px 20px;font-size:11px;border-color:rgba(255,255,255,.6);backdrop-filter:blur(6px);background:rgba(18,10,6,.25);transition:background .3s,border-color .3s}#cdk-drum .cxd3-snd[aria-pressed=true]{background:#e25b1e;border-color:#e25b1e}#cdk-drum .cxd3-snd[aria-pressed=true] i{background:#fff}#cdk-drum .cdk-in{will-change:transform}';
+  st.textContent = 'html,body:has(#cdk-drum){overflow-x:clip}@media (min-width:768px){#cdk-drum .cpa-cta-ratingwrap{display:flex;justify-content:flex-start;margin-left:0}}#cdk-drum .cxd3-snd{position:relative!important;right:auto!important;bottom:auto!important;margin:22px 0 0;display:inline-flex!important;padding:12px 20px;font-size:11px;border-color:rgba(255,255,255,.6);backdrop-filter:blur(6px);background:rgba(18,10,6,.25);transition:background .3s,border-color .3s}#cdk-drum .cxd3-snd[aria-pressed=true]{background:#e25b1e;border-color:#e25b1e}#cdk-drum .cxd3-snd[aria-pressed=true] i{background:#fff}#cdk-drum .cdk-in{will-change:transform}';
   document.head.appendChild(st);
+  (function(){var h=mount.closest('.cdk'),b=h&&h.querySelector('.cxd3-snd'),i=h&&h.querySelector('.cdk-in');if(b&&i){var w=document.createElement('div');w.appendChild(b);i.appendChild(w);b.querySelector('b').textContent='Play the beat';}})();
   var BASE = new URL('.', (document.currentScript && document.currentScript.src) || 'https://lkslbrt-beep.github.io/cover-page-access/cta-lab/drummer/a/index.js').href;
   var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduce) return; // poster stays
