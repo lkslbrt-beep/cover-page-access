@@ -22,6 +22,7 @@
     var cv = document.createElement('canvas'); cv.className = 'cxd3-cv'; mount.appendChild(cv);
     var gl = cv.getContext('webgl', { premultipliedAlpha: false, alpha: true });
     if (!gl) return;
+    try { var dbg = gl.getExtension('WEBGL_debug_renderer_info'); var rn = dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : ''; if (/swiftshader|llvmpipe|software/i.test(rn)) { cv.remove(); return; } } catch (x) {}
     var vs = vid('sunset.mp4'), vd = vid('drummer.mp4'), vc = vid('cymbal.mp4');
     var vids = [vs, vd, vc];
     var VS = 'attribute vec2 p;varying vec2 u;void main(){u=p*.5+.5;u.y=1.-u.y;gl_Position=vec4(p,0,1);}';
@@ -163,6 +164,9 @@
     }
     requestAnimationFrame(frame);
   };
-  var io = new IntersectionObserver(function (e) { if (e[0].isIntersecting) start(); }, { rootMargin: '200px 0px' });
-  io.observe(mount);
+  var io = { disconnect: function () {} }, go = false;
+  function kick() { if (go) return; go = true; ['pointermove','pointerdown','scroll','keydown','touchstart'].forEach(function (t) { removeEventListener(t, kick, true); }); start(); }
+  ['pointermove','pointerdown','scroll','keydown','touchstart'].forEach(function (t) { addEventListener(t, kick, { capture: true, passive: true }); });
+  function later() { setTimeout(function () { (window.requestIdleCallback || setTimeout)(kick); }, 2500); }
+  if (document.readyState === 'complete') later(); else addEventListener('load', later);
 })();
