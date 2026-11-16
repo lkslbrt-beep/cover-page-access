@@ -1,7 +1,7 @@
 /* CPA kinetic hero: juggler A (fire). Real footage, depth by scroll zoom and cursor light,
    tap = flame burst + sparks + whoosh. Starts on first interaction or 2.5 s idle. */
 (function(){
-var B='https://cpa-cta-juggler.netlify.app/juggler/a/';
+var S=document.currentScript,B=S?S.src.replace(/[^/]*$/,''):'https://cpa-cta-juggler.netlify.app/';
 var root=document.getElementById('cdk-jug');if(!root)return;
 var mount=root.querySelector('[data-cxd3]'),snd=root.querySelector('.cxd3-snd');
 var IT=/^\/it(\/|$)/.test(location.pathname);
